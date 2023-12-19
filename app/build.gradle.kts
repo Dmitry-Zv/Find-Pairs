@@ -35,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -46,6 +49,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 
     //Hilt&Dagger
     val hiltDaggerVersion = "2.49"
@@ -55,18 +59,18 @@ dependencies {
 
     //Room
     val roomVersion = "2.6.1"
-    implementation ("androidx.room:room-runtime:$roomVersion")
-    kapt ("androidx.room:room-compiler:$roomVersion")
-    implementation ("androidx.room:room-ktx:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     //Coroutines
     val coroutinesVersion = "1.7.3"
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
     //Coroutines Lifecycle Scopes
     val coroutineLifeCycleVersion = "2.6.2"
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$coroutineLifeCycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:$coroutineLifeCycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$coroutineLifeCycleVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$coroutineLifeCycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$coroutineLifeCycleVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$coroutineLifeCycleVersion")
 }

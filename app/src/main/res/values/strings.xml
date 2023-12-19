@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Find Pairs</string>
+    <string name="game_logo">Game Logo №1</string>
+    <string name="play">PLAY</string>
+    <string name="privacy_policy_content_description">privacy policy</string>
 </resources>
