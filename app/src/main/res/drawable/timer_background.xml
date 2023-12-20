@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="50dp"
+        android:height="20dp"
+        android:drawable="@drawable/rounded_background"
+        android:gravity="fill_vertical" />
+    <item
+        android:width="30dp"
+        android:height="30dp"
+        android:drawable="@drawable/timer_24"
+        android:gravity="start|center_vertical" />
+</layer-list>

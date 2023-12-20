@@ -3,4 +3,5 @@
     <string name="game_logo">Game Logo №1</string>
     <string name="play">PLAY</string>
     <string name="privacy_policy_content_description">privacy policy</string>
+    <string name="game_info">Keep matching up two of the same object until there are no more to be paired and you clear the board</string>
 </resources>
