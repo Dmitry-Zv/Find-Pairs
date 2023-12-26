@@ -1,9 +1,6 @@
 package com.vc.findpairs.adapter
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
-import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +10,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.vc.findpairs.databinding.ItemGameFieldBinding
-import com.vc.findpairs.domain.model.GameField
+import com.vc.findpairs.domain.model.GameFieldEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.concurrent.Volatile
 
 class GameFieldAdapter(
     private val fieldFlipped: FieldFlipped,
@@ -28,71 +21,60 @@ class GameFieldAdapter(
 
     private val scope = CoroutineScope(Dispatchers.Main)
 
-    private val callback = object : DiffUtil.ItemCallback<GameField>() {
-        override fun areItemsTheSame(oldItem: GameField, newItem: GameField): Boolean =
+    private val callback = object : DiffUtil.ItemCallback<GameFieldEntity>() {
+        override fun areItemsTheSame(oldItem: GameFieldEntity, newItem: GameFieldEntity): Boolean =
             oldItem.iconField == newItem.iconField
 
 
-        override fun areContentsTheSame(oldItem: GameField, newItem: GameField): Boolean =
+        override fun areContentsTheSame(
+            oldItem: GameFieldEntity,
+            newItem: GameFieldEntity
+        ): Boolean =
             oldItem == newItem
 
     }
 
-    @Volatile
-    private var isClickedEnable = AtomicBoolean(true)
+    private var isClickedEnable = true
+    private var isFirstBind = true
 
 
     private val listDiffer = AsyncListDiffer(this, callback)
 
     inner class GameFieldViewHolder(private val binding: ItemGameFieldBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(gameField: GameField, position: Int, isEnable: Boolean) {
+        fun bind(gameFieldEntity: GameFieldEntity, position: Int) {
             with(binding) {
 
-                itemFieldIcon.setImageResource(gameField.iconField)
-                cardView.isEnabled = !gameField.isRotated
-                cardView.rotationY = if (gameField.isRotated) 180f else 0f
-                if (cardView.rotationY == 180F) itemFieldIcon.visibility = View.VISIBLE
+                itemFieldIcon.setImageResource(gameFieldEntity.iconField)
+                cardView.isEnabled = !gameFieldEntity.isRotated
+                cardView.rotationY = if (gameFieldEntity.isRotated) 180f else 0f
+                val rotation = if (gameFieldEntity.isRotated) 0f else 180f
+                val rotationAnimator =
+                    ObjectAnimator.ofFloat(cardView, "rotationY", rotation)
+                rotationAnimator.duration = 300
+                rotationAnimator.interpolator = AccelerateDecelerateInterpolator()
+                rotationAnimator.start()
+                if (cardView.rotationY == 180f) itemFieldIcon.visibility = View.VISIBLE
                 else itemFieldIcon.visibility = View.GONE
-                synchronized(this@GameFieldAdapter) {
-                    if (gameField.isRight) {
-                        Log.d("IS_CLICKED", isClickedEnable.toString() + " 222")
-                        isClickedEnable.set(false)
-                        cardView.postDelayed(
-                            {
-                                cardView.visibility = View.GONE
-                                checkIfWon()
-                                isClickedEnable.set(true)
-                            },
-                            5000L
-                        )
-//                        scope.launch {
-//                        isClickedEnable = false
-//
-//                            delay(5000L)
-//                            cardView.visibility = View.GONE
-//                            isClickedEnable = true
-//                            checkIfWon()
-//                        }
-                    }
+                if (gameFieldEntity.isRight) {
+                    Log.d("IS_CLICKED", isClickedEnable.toString() + " 222")
+                    isClickedEnable = false
+                    cardView.visibility = View.GONE
+                    checkIfWon()
+                    isClickedEnable = true
                 }
-
                 Log.d("IS_CLICKED", isClickedEnable.toString())
-                if (isClickedEnable.get()) {
-                    cardView.setOnClickListener {
+
+                cardView.setOnClickListener {
+                    if (isClickedEnable) {
                         cardView.isEnabled = false
 
                         fieldFlipped.onFlipped(
-                            gameField = gameField,
+                            gameFieldEntity = gameFieldEntity,
                             position = position,
-                            listOfGameField = listDiffer.currentList
+                            listOfGameFieldEntity = listDiffer.currentList
                         )
-                        val rotation = if (gameField.isRotated) 0f else 180f
-                        val rotationAnimator =
-                            ObjectAnimator.ofFloat(cardView, "rotationY", rotation)
-                        rotationAnimator.duration = 300 // Adjust the duration as needed
-                        rotationAnimator.interpolator = AccelerateDecelerateInterpolator()
-                        rotationAnimator.start()
+
                     }
                 }
             }
@@ -100,7 +82,7 @@ class GameFieldAdapter(
     }
 
     private fun checkIfWon() {
-        victory.checkTheVictory(listOfGameField = listDiffer.currentList)
+        victory.checkTheVictory(listOfGameFieldEntity = listDiffer.currentList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameFieldViewHolder {
@@ -113,18 +95,23 @@ class GameFieldAdapter(
 
     override fun onBindViewHolder(holder: GameFieldViewHolder, position: Int) {
         val gameField = listDiffer.currentList[position]
-        holder.bind(gameField, position, isClickedEnable.get())
+        holder.bind(gameField, position)
+        isFirstBind = false
     }
 
-    fun submitList(listOfGameField: List<GameField>) {
-        listDiffer.submitList(listOfGameField)
+    fun submitList(listOfGameFieldEntity: List<GameFieldEntity>) {
+        listDiffer.submitList(listOfGameFieldEntity)
     }
 }
 
 interface FieldFlipped {
-    fun onFlipped(gameField: GameField, position: Int, listOfGameField: List<GameField>)
+    fun onFlipped(
+        gameFieldEntity: GameFieldEntity,
+        position: Int,
+        listOfGameFieldEntity: List<GameFieldEntity>
+    )
 }
 
 interface Victory {
-    fun checkTheVictory(listOfGameField: List<GameField>)
+    fun checkTheVictory(listOfGameFieldEntity: List<GameFieldEntity>)
 }
