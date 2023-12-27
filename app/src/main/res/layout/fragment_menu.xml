@@ -7,20 +7,20 @@
 
     <ImageView
         android:id="@+id/money_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="4dp"
         android:src="@drawable/circle_background"
-        app:layout_constraintEnd_toStartOf="@+id/money_text"
+        app:layout_constraintEnd_toStartOf="@+id/coin_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/money_text"
+        android:id="@+id/coin_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
-        android:textSize="20sp"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="@+id/money_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/money_icon"
@@ -61,10 +61,10 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:backgroundTint="@color/grey"
+        android:contentDescription="@string/privacy_policy_content_description"
         android:foreground="@drawable/privacy_policy_background"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/privacy_policy_content_description" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

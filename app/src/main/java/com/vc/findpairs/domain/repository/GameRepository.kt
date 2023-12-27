@@ -7,5 +7,11 @@ interface GameRepository {
 
     suspend fun insertListOfGameEntity(listOfGameEntity: List<GameEntity>)
 
-    fun getGameEntity(gameLevel: Int): Flow<GameEntity>
+    fun getGameEntity(): Flow<GameEntity>
+
+    fun insertGameLevel(gameLevel: Int)
+
+    suspend fun getLastLevel(): Int
+
+    fun getGameLevel(): Int
 }

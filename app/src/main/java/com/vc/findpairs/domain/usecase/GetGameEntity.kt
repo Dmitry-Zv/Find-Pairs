@@ -7,6 +7,6 @@ import javax.inject.Inject
 
 class GetGameEntity @Inject constructor(private val repository: GameRepository) {
 
-    operator fun invoke(gameLevel: Int): Flow<GameEntity> =
-        repository.getGameEntity(gameLevel = gameLevel)
+    operator fun invoke(): Flow<GameEntity> =
+        repository.getGameEntity()
 }

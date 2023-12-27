@@ -13,6 +13,9 @@ interface GameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGameEntities(listOfGameEntities: List<GameEntity>)
 
+    @Query("SELECT MAX(id) FROM $GAME_TABLE")
+    suspend fun getLastLevel(): Int
+
     @Query("SELECT * FROM $GAME_TABLE WHERE id = :gameLevel")
     fun getGameEntity(gameLevel: Int): Flow<GameEntity>
 }
