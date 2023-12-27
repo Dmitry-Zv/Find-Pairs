@@ -8,7 +8,7 @@
 
     <FrameLayout
         android:id="@+id/frame_layout"
-        android:layout_width="150dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
@@ -27,15 +27,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTintMode="add"
-                android:paddingStart="40dp"
-                android:paddingEnd="30dp"
-                android:textSize="30sp"
+                android:paddingStart="70dp"
+                android:paddingEnd="90dp"
+                android:textSize="40sp"
                 tools:text="00:10" />
         </FrameLayout>
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/timer_24" />
 
@@ -44,8 +44,8 @@
 
     <ImageView
         android:id="@+id/money_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="4dp"
         android:src="@drawable/circle_background"
         app:layout_constraintBottom_toBottomOf="@id/frame_layout"
@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
-        android:textSize="30sp"
+        android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="@+id/money_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/money_icon"
@@ -80,9 +80,10 @@
 
     <TextView
         android:id="@+id/info_text"
-        android:layout_width="250dp"
+        android:layout_width="450dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
+        android:textSize="24sp"
         android:gravity="center"
         android:maxLines="3"
         android:text="@string/game_info"

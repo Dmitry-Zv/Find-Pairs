@@ -4,15 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.vc.findpairs.R
 import com.vc.findpairs.utils.Constants.GAME_FIELD_TABLE
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 @Entity(tableName = GAME_FIELD_TABLE)
 data class GameFieldEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
     val iconField: Int,
-    val isRotated: Boolean,
+    val isRotated: Boolean?,
     val isRight: Boolean
 ) {
     companion object {
@@ -40,7 +38,7 @@ data class GameFieldEntity(
                     GameFieldEntity(
                         id = count,
                         iconField = randomDrawableResource,
-                        isRotated = false,
+                        isRotated = null,
                         isRight = false,
                     )
                 )
@@ -48,7 +46,7 @@ data class GameFieldEntity(
                     GameFieldEntity(
                         id = ++count,
                         iconField = randomDrawableResource,
-                        isRotated = false,
+                        isRotated = null,
                         isRight = false,
                     )
                 )

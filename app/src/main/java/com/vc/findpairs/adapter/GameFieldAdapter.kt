@@ -1,25 +1,24 @@
 package com.vc.findpairs.adapter
 
-import android.animation.ObjectAnimator
-import android.util.Log
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.vc.findpairs.R
 import com.vc.findpairs.databinding.ItemGameFieldBinding
 import com.vc.findpairs.domain.model.GameFieldEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class GameFieldAdapter(
     private val fieldFlipped: FieldFlipped,
-    private val victory: Victory
+    private val victory: Victory,
 ) : RecyclerView.Adapter<GameFieldAdapter.GameFieldViewHolder>() {
 
-    private val scope = CoroutineScope(Dispatchers.Main)
 
     private val callback = object : DiffUtil.ItemCallback<GameFieldEntity>() {
         override fun areItemsTheSame(oldItem: GameFieldEntity, newItem: GameFieldEntity): Boolean =
@@ -44,41 +43,95 @@ class GameFieldAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(gameFieldEntity: GameFieldEntity, position: Int) {
             with(binding) {
-
                 itemFieldIcon.setImageResource(gameFieldEntity.iconField)
-                cardView.isEnabled = !gameFieldEntity.isRotated
-                cardView.rotationY = if (gameFieldEntity.isRotated) 180f else 0f
-                val rotation = if (gameFieldEntity.isRotated) 0f else 180f
-                val rotationAnimator =
-                    ObjectAnimator.ofFloat(cardView, "rotationY", rotation)
-                rotationAnimator.duration = 300
-                rotationAnimator.interpolator = AccelerateDecelerateInterpolator()
-                rotationAnimator.start()
+                if (gameFieldEntity.isRotated != null) {
+                    cardView.isEnabled = !gameFieldEntity.isRotated
+                    cardView.rotationY = if (gameFieldEntity.isRotated) 0f else 180f
+                    if (!gameFieldEntity.isRotated) {
+                        flipAnimatorReverse(binding.root, itemFieldIcon = itemFieldIcon)
+                    } else {
+                        flipAnimator(binding.root, itemFieldIcon)
+                    }
+                } else {
+                    cardView.isEnabled = true
+                    itemFieldIcon.visibility = View.GONE
+                }
+
                 if (cardView.rotationY == 180f) itemFieldIcon.visibility = View.VISIBLE
                 else itemFieldIcon.visibility = View.GONE
                 if (gameFieldEntity.isRight) {
-                    Log.d("IS_CLICKED", isClickedEnable.toString() + " 222")
                     isClickedEnable = false
                     cardView.visibility = View.GONE
                     checkIfWon()
                     isClickedEnable = true
                 }
-                Log.d("IS_CLICKED", isClickedEnable.toString())
 
                 cardView.setOnClickListener {
                     if (isClickedEnable) {
                         cardView.isEnabled = false
-
                         fieldFlipped.onFlipped(
                             gameFieldEntity = gameFieldEntity,
                             position = position,
                             listOfGameFieldEntity = listDiffer.currentList
                         )
-
                     }
                 }
             }
         }
+    }
+
+    private fun flipAnimator(view: View, itemFieldIcon: ImageView) {
+        val flipAnimatorReverse = AnimatorInflater.loadAnimator(
+            view.context,
+            R.animator.flip_animator
+        ) as AnimatorSet
+        flipAnimatorReverse.setTarget(view)
+        flipAnimatorReverse.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                isClickedEnable = false
+                itemFieldIcon.visibility = View.GONE
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                isClickedEnable = true
+                itemFieldIcon.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+            }
+
+        })
+        flipAnimatorReverse.start()
+    }
+
+    private fun flipAnimatorReverse(view: View, itemFieldIcon: ImageView) {
+        val flipAnimator = AnimatorInflater.loadAnimator(
+            view.context,
+            R.animator.flip_animator_reverse
+        ) as AnimatorSet
+        flipAnimator.setTarget(view)
+        flipAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                isClickedEnable = false
+                itemFieldIcon.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                isClickedEnable = true
+                itemFieldIcon.visibility = View.GONE
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+            }
+
+        })
+        flipAnimator.start()
     }
 
     private fun checkIfWon() {

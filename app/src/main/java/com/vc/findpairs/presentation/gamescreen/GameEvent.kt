@@ -4,7 +4,7 @@ import com.vc.findpairs.domain.model.GameFieldEntity
 
 sealed class GameEvent {
     data object StartTimer : GameEvent()
-    data class CheckTwoField(
+    data class ReverseField(
         val listOfGameFieldEntity: List<GameFieldEntity>,
         val gameFieldEntity: GameFieldEntity,
         val position: Int

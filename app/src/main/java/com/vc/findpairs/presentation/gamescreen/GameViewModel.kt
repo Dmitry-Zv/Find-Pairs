@@ -29,7 +29,7 @@ class GameViewModel @Inject constructor(private val gameUseCases: GameUseCases) 
     val listOfGameField = _listOfGameFieldEntity.asStateFlow()
     private val _congratulation = MutableStateFlow(false)
     val congratulation = _congratulation.asStateFlow()
-    private val _coin = MutableStateFlow<Coin>(Coin(1, 0, 0))
+    private val _coin = MutableStateFlow<Coin>(Coin(0, 0, 0))
     val coin = _coin.asStateFlow()
     private val flippedCards = mutableListOf<GameFieldEntity>()
     private val _gameEntityState = MutableStateFlow<GameEntity?>(null)
@@ -41,7 +41,7 @@ class GameViewModel @Inject constructor(private val gameUseCases: GameUseCases) 
     override fun onEvent(event: GameEvent) {
         when (event) {
             GameEvent.StartTimer -> startTimer()
-            is GameEvent.CheckTwoField -> checkTwoField(
+            is GameEvent.ReverseField -> checkTwoField(
                 listOfGameFieldEntity = event.listOfGameFieldEntity,
                 gameFieldEntity = event.gameFieldEntity
             )
@@ -108,58 +108,64 @@ class GameViewModel @Inject constructor(private val gameUseCases: GameUseCases) 
         gameFieldEntity: GameFieldEntity,
     ) {
         viewModelScope.launch {
-            flippedCards.add(gameFieldEntity)
             var count = 0
-            list = listOfGameFieldEntity.map {
-                if (it.isRotated && !it.isRight) {
-                    count++
+            flippedCards.add(gameFieldEntity)
+            list = listOfGameFieldEntity.map { gameFieldEntity ->
+                gameFieldEntity.isRotated?.let { isRotated ->
+                    if (isRotated && !gameFieldEntity.isRight) {
+                        count++
+                    }
                 }
-                it
+                gameFieldEntity
             }
             _listOfGameFieldEntity.value = list
-            delay(500L)
-            println("GAME_FIELD_LIST: $list count: $count")
+            delay(400L)
+
             if (count == 2) {
                 if (flippedCards[0].iconField == flippedCards[1].iconField) {
-                    list = listOfGameFieldEntity.map {
-                        if (it.isRotated) {
-                            GameFieldEntity(
-                                id = it.id,
-                                iconField = it.iconField,
-                                isRotated = true,
-                                isRight = true
-                            )
-                        } else {
-                            it
-                        }
+                    list = listOfGameFieldEntity.map { gameFieldEntity ->
+                        gameFieldEntity.isRotated?.let { isRotated ->
+                            if (isRotated) {
+                                GameFieldEntity(
+                                    id = gameFieldEntity.id,
+                                    iconField = gameFieldEntity.iconField,
+                                    isRotated = true,
+                                    isRight = true
+                                )
+                            } else {
+                                gameFieldEntity
+                            }
+                        } ?: gameFieldEntity
                     }
                 } else {
-                    list = listOfGameFieldEntity.map {
-                        if (it.isRotated && !it.isRight) {
-                            GameFieldEntity(
-                                id = it.id,
-                                iconField = it.iconField,
-                                isRotated = false,
-                                isRight = false
-                            )
-                        } else if (it.isRight) {
-                            GameFieldEntity(
-                                id = it.id,
-                                iconField = it.iconField,
-                                isRotated = true,
-                                isRight = true
-                            )
-                        } else {
-                            it
-                        }
+                    list = listOfGameFieldEntity.map { gameFieldEntity ->
+                        gameFieldEntity.isRotated?.let { isRotated ->
+                            if (isRotated && !gameFieldEntity.isRight) {
+                                GameFieldEntity(
+                                    id = gameFieldEntity.id,
+                                    iconField = gameFieldEntity.iconField,
+                                    isRotated = false,
+                                    isRight = false
+                                )
+                            } else if (gameFieldEntity.isRight) {
+                                GameFieldEntity(
+                                    id = gameFieldEntity.id,
+                                    iconField = gameFieldEntity.iconField,
+                                    isRotated = true,
+                                    isRight = true
+                                )
+                            } else {
+                                gameFieldEntity
+                            }
+                        } ?: gameFieldEntity
                     }
                 }
-                println("GAME_FIELD_LIST: $list")
+
                 count = 0
                 flippedCards.clear()
             }
-
             _listOfGameFieldEntity.value = list
+
         }
 
     }

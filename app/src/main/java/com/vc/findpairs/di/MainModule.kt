@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -18,10 +19,12 @@ import com.vc.findpairs.domain.model.GameEntity
 import com.vc.findpairs.domain.repository.CoinRepository
 import com.vc.findpairs.domain.repository.GameFieldRepository
 import com.vc.findpairs.domain.repository.GameRepository
+import com.vc.findpairs.domain.usecase.DeleteListOfGameFieldEntity
 import com.vc.findpairs.domain.usecase.GameUseCases
 import com.vc.findpairs.domain.usecase.GetCoin
 import com.vc.findpairs.domain.usecase.GetGameEntity
 import com.vc.findpairs.domain.usecase.GetGameLevel
+import com.vc.findpairs.domain.usecase.GetLastLevel
 import com.vc.findpairs.domain.usecase.GetListOfGameFieldEntityByGameLevel
 import com.vc.findpairs.domain.usecase.InsertCoin
 import com.vc.findpairs.domain.usecase.InsertGameLevel
@@ -36,10 +39,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Module
@@ -50,46 +49,36 @@ object MainModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context
-    ): GameDatabase =
-        Room.databaseBuilder(context, GameDatabase::class.java, GAME_DB)
+    ): GameDatabase {
+        val database = Room.databaseBuilder(context, GameDatabase::class.java, GAME_DB)
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     try {
-                        db.beginTransaction()
                         GameEntity.listOfGameEntity.forEach {
                             val cv = ContentValues()
                             cv.put("id", it.id)
                             cv.put("countOfFields", it.countOfFields)
                             cv.put("countOfColumns", it.countOfColumns)
-                            db.insert(Constants.GAME_TABLE, SQLiteDatabase.CONFLICT_IGNORE, cv)
+                            db.insert(Constants.GAME_TABLE, SQLiteDatabase.CONFLICT_ABORT, cv)
                             cv.clear()
                         }
                         val cv = ContentValues()
-                        cv.put("id", 0)
+                        cv.put("id", 1)
                         cv.put("currentCoin", 0)
                         cv.put("earnedCoin", 0)
-                        db.insert(Constants.COIN_TABLE, SQLiteDatabase.CONFLICT_IGNORE, cv)
+                        db.insert(Constants.COIN_TABLE, SQLiteDatabase.CONFLICT_ABORT, cv)
                         cv.clear()
-                        db.setTransactionSuccessful()
-                        db.endTransaction()
                     } catch (e: Exception) {
-                        db.endTransaction()
+                        Log.e("GAME_DB", e.message, e)
                     }
 
                 }
             })
             .build()
-
-//    @Provides
-//    @Singleton
-//    fun provideGameCallback(
-//        gameDao: GameDao,
-//        coinDao: CoinDao
-//    ): GameCallback = GameCallback(
-//        gameDao = gameDao,
-//        coinDao = coinDao
-//    )
+        database.openHelper.writableDatabase
+        return database
+    }
 
     @Provides
     @Singleton
@@ -125,7 +114,9 @@ object MainModule {
                 gameFieldRepository
             ),
             insertGameLevel = InsertGameLevel(repository),
-            getGameLevel = GetGameLevel(repository)
+            getGameLevel = GetGameLevel(repository),
+            deleteListOfGameFieldEntity = DeleteListOfGameFieldEntity(gameFieldRepository),
+            getLastLevel = GetLastLevel(repository)
         )
 
     @Provides

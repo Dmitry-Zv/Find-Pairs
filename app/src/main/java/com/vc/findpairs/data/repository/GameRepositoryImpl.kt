@@ -27,6 +27,9 @@ class GameRepositoryImpl @Inject constructor(
             .apply()
     }
 
+    override suspend fun getLastLevel(): Int =
+        gameDao.getLastLevel()
+
     override fun getGameLevel(): Int =
         gamePreferences.getInt(GAME_LEVEL_KEY, 1)
 

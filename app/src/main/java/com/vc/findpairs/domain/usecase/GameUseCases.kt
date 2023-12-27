@@ -8,5 +8,7 @@ data class GameUseCases(
     val insertListOfGameFieldEntity: InsertListOfGameFieldEntity,
     val getListOfGameFieldEntityByGameLevel: GetListOfGameFieldEntityByGameLevel,
     val insertGameLevel: InsertGameLevel,
-    val getGameLevel: GetGameLevel
+    val getGameLevel: GetGameLevel,
+    val deleteListOfGameFieldEntity: DeleteListOfGameFieldEntity,
+    val getLastLevel: GetLastLevel
 )

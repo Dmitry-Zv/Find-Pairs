@@ -11,5 +11,7 @@ interface GameRepository {
 
     fun insertGameLevel(gameLevel: Int)
 
-    fun getGameLevel():Int
+    suspend fun getLastLevel(): Int
+
+    fun getGameLevel(): Int
 }

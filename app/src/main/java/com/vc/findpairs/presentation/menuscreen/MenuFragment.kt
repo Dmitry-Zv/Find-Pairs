@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.vc.findpairs.R
 import com.vc.findpairs.databinding.FragmentMenuBinding
-import com.vc.findpairs.domain.model.GameEntity
-import com.vc.findpairs.presentation.gamescreen.GameFragment
+import com.vc.findpairs.presentation.MainViewModel
+import com.vc.findpairs.presentation.Navigation
 import com.vc.findpairs.utils.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +21,7 @@ class MenuFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MenuViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,17 +36,13 @@ class MenuFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onEvent(event = MenuEvent.GetCurrentCoin)
         binding.playButton.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<GameFragment>(R.id.fragment_container)
-            }
+            mainViewModel.onEvent(event = Navigation.OnGameFragment)
         }
         collectCurrentCoin()
     }
 
     private fun collectCurrentCoin() {
         collectLatestLifecycleFlow(viewModel.currentCoin) { currentCoin ->
-            Log.d("CURRENT_COIN", currentCoin.toString())
             binding.coinText.text = currentCoin.toString()
         }
     }

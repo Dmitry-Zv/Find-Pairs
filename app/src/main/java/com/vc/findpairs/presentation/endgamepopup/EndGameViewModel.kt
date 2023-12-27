@@ -38,13 +38,17 @@ class EndGameViewModel @Inject constructor(private val gameUseCases: GameUseCase
     }
 
     private fun nextLevel() {
-        var gameLevel = gameUseCases.getGameLevel()
-        if (gameLevel == 10) {
-            gameUseCases.insertGameLevel(gameLevel = 1)
-        } else {
-            gameUseCases.insertGameLevel(gameLevel = ++gameLevel)
+        viewModelScope.launch {
+            var gameLevel = gameUseCases.getGameLevel()
+            if (gameLevel == gameUseCases.getLastLevel()) {
+                gameUseCases.deleteListOfGameFieldEntity()
+                gameUseCases.insertGameLevel(gameLevel = 1)
+                _endGameState.value = EndGame.GoToMenuFragment
+            } else {
+                gameUseCases.insertGameLevel(gameLevel = ++gameLevel)
+                _endGameState.value = EndGame.GoToGameFragment
+            }
         }
-        _endGameState.value = EndGame.GoToGameFragment
     }
 
     private fun doubleReward(coin: Coin) {

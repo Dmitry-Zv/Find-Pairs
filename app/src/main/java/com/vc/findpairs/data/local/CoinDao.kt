@@ -15,5 +15,5 @@ interface CoinDao {
     suspend fun insertOrUpdateCoin(coin: Coin)
 
     @Query("SELECT * FROM $COIN_TABLE WHERE id = 1")
-    fun getCoin():Flow<Coin>
+    fun getCoin(): Flow<Coin>
 }

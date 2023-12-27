@@ -12,7 +12,7 @@ data class GameEntity(
     val countOfColumns: Int
 ) {
     companion object {
-        val listOfGameEntity = listOf<GameEntity>(
+        val listOfGameEntity = listOf(
             GameEntity(
                 1, 4, 2
             ),
@@ -20,28 +20,13 @@ data class GameEntity(
                 2, 6, 2
             ),
             GameEntity(
-                3, 6, 3
+                3, 12, 3
             ),
             GameEntity(
-                4, 8, 4
+                4, 16, 4
             ),
             GameEntity(
-                5, 10, 5
-            ),
-            GameEntity(
-                6, 12, 4
-            ),
-            GameEntity(
-                7, 16, 4
-            ),
-            GameEntity(
-                8, 20, 4
-            ),
-            GameEntity(
-                9, 20, 5
-            ),
-            GameEntity(
-                10, 20, 5
+                5, 20, 4
             )
         )
     }
